@@ -6,6 +6,23 @@ import matplotlib.pyplot as plt
 from statistics import mean
 import time
 
+def createExamples():
+    numberArrayExamples = open('numArEx.txt', 'a')
+    numbersWeHave = range(0, 10)
+    versionsWeHave = range(1, 10)
+
+    for eachNum in numbersWeHave:
+        for eachVer in versionsWeHave:
+            print(str(eachNum) + '.' + str(eachVer))
+            imgFilePath = 'images/numbers/' + str(eachVer) + '.' + str(eachVer) + '.png'
+            ei = Image.open(imgFilePath)
+            eiar = np.array(ei)
+            eiar1 = str(eiar.tolist())
+
+            lineToWrithe = str(eachNum) + '::' + eiar1 + '\n'
+            numberArrayExamples.write(lineToWrithe)
+
+
 
 def threshold(imageArray):
     balanceAr = []
@@ -39,7 +56,9 @@ iar3 = np.array(i3)
 i4 = Image.open('images/sentdex.png')
 iar4 = np.array(i4)
 
-threshold(iar2)
+createExamples()
+
+'''threshold(iar2)
 threshold(iar3)
 threshold(iar4)
 
@@ -55,4 +74,4 @@ ax3.imshow(iar3)
 ax4.imshow(iar4)
 
 
-plt.show()
+plt.show()'''
