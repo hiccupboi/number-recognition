@@ -1,77 +1,82 @@
 from functools import reduce
-
 from PIL import Image
 import numpy as np
-import matplotlib.pyplot as plt
-from statistics import mean
-import time
+from collections import Counter
 
-def createExamples():
-    numberArrayExamples = open('numArEx.txt', 'a')
-    numbersWeHave = range(0, 10)
-    versionsWeHave = range(1, 10)
 
-    for eachNum in numbersWeHave:
-        for eachVer in versionsWeHave:
-            print(str(eachNum) + '.' + str(eachVer))
-            imgFilePath = 'images/numbers/' + str(eachVer) + '.' + str(eachVer) + '.png'
-            ei = Image.open(imgFilePath)
+def create_examples():
+    number_array_examples = open('numArEx.txt', 'a')
+    numbers_we_have = range(1, 10)
+    for each_num in numbers_we_have:
+        for further_num in numbers_we_have:
+            print(str(each_num) + '.' + str(further_num))
+            img_file_path = 'images/numbers/' + str(each_num) + '.' + str(further_num) + '.png'
+            ei = Image.open(img_file_path)
             eiar = np.array(ei)
-            eiar1 = str(eiar.tolist())
+            eiarl = str(eiar.tolist())
+            print(eiarl)
+            line_to_write = str(each_num) + '::' + eiarl + '\n'
+            number_array_examples.write(line_to_write)
 
-            lineToWrithe = str(eachNum) + '::' + eiar1 + '\n'
-            numberArrayExamples.write(lineToWrithe)
 
-
-
-def threshold(imageArray):
-    balanceAr = []
-    newAr = imageArray
-    for eachRow in imageArray:
-        for eachPix in eachRow:
-            avgNum = reduce(lambda x, y: x + y, eachPix[:3])/len(eachPix[:3])
-            balanceAr.append(avgNum)
-    balance = reduce(lambda x, y: x + y, balanceAr)/len(balanceAr)
-    for eachRow in newAr:
-        for eachPix in eachRow:
-            if reduce(lambda x, y: x + y, eachPix[:3])/len(eachPix[:3]) > balance:
-                eachPix[0] = 255
-                eachPix[1] = 255
-                eachPix[2] = 255
-                eachPix[3] = 255
+def threshold(image_array):
+    balance_array = []
+    new_array = image_array
+    for each_row in image_array:
+        for each_pix in each_row:
+            avg_num = reduce(lambda x, y: x + y, each_pix[:3]) / len(each_pix[:3])
+            balance_array.append(avg_num)
+    balance = reduce(lambda x, y: x + y, balance_array) / len(balance_array)
+    for each_row in new_array:
+        for each_pix in each_row:
+            if reduce(lambda x, y: x + y, each_pix[:3]) / len(each_pix[:3]) > balance:
+                each_pix[0] = 255
+                each_pix[1] = 255
+                each_pix[2] = 255
+                each_pix[3] = 255
             else:
-                eachPix[0] = 0
-                eachPix[1] = 0
-                eachPix[2] = 0
-                eachPix[3] = 255
-    return newAr
+                each_pix[0] = 0
+                each_pix[1] = 0
+                each_pix[2] = 0
+                each_pix[3] = 255
+    return new_array
 
 
-i = Image.open('images/numbers/0.1.png')
-iar = np.array(i)
-i2 = Image.open('images/numbers/y0.4.png')
-iar2 = np.array(i2)
-i3 = Image.open('images/numbers/y0.5.png')
-iar3 = np.array(i3)
-i4 = Image.open('images/sentdex.png')
-iar4 = np.array(i4)
+def what_is_this_number(file_path):
+    matched_array = []
+    load_examples = open('numArEx.txt', 'r').read()
+    load_examples = load_examples.split('\n')
 
-createExamples()
+    i = Image.open(file_path)
+    iar = np.array(i)
+    iarl = iar.tolist()
 
-'''threshold(iar2)
-threshold(iar3)
-threshold(iar4)
+    in_question = str(iarl)
 
-fig = plt.figure()
-ax1 = plt.subplot2grid((8, 6), (0, 0), rowspan=4, colspan=3)
-ax2 = plt.subplot2grid((8, 6), (4, 0), rowspan=4, colspan=3)
-ax3 = plt.subplot2grid((8, 6), (0, 3), rowspan=4, colspan=3)
-ax4 = plt.subplot2grid((8, 6), (4, 3), rowspan=4, colspan=3)
+    for each_example in load_examples:
+        try:
+            split_example = each_example.split('::')
+            current_num = split_example[0]
+            current_ar = split_example[1]
 
-ax1.imshow(iar)
-ax2.imshow(iar2)
-ax3.imshow(iar3)
-ax4.imshow(iar4)
+            each_pix_example = current_ar.split('],')
+            each_pix_in_question = in_question.split('],')
+
+            x = 0
+
+            while x < len(each_pix_example):
+                if each_pix_example[x] == each_pix_in_question[x]:
+                    matched_array.append(int(current_num))
+
+                x += 1
+        except Exception as e:
+            print(str(e))
+
+    print(matched_array)
+    x = Counter(matched_array)
+    print(x)
+    print(x[0])
 
 
-plt.show()'''
+create_examples()
+what_is_this_number('images/test.png')
