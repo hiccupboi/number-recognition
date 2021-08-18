@@ -2,6 +2,9 @@ from functools import reduce
 from PIL import Image
 import numpy as np
 from collections import Counter
+from matplotlib import style, pyplot as plt
+
+style.use("ggplot")
 
 
 def create_examples():
@@ -72,11 +75,30 @@ def what_is_this_number(file_path):
         except Exception as e:
             print(str(e))
 
-    print(matched_array)
     x = Counter(matched_array)
     print(x)
-    print(x[0])
+    graphX = []
+    graphY = []
+
+    ylimi = 0
+
+    for each_thing in x:
+        graphX.append(each_thing)
+        graphY.append(x[each_thing])
+        ylimi = x[each_thing]
+
+    fig = plt.figure()
+    ax1 = plt.subplot2grid((4, 4), (0, 0), rowspan=1, colspan=4)
+    ax2 = plt.subplot2grid((4, 4), (1, 0), rowspan=3, colspan=4)
+
+    ax1.imshow(iar)
+    ax2.bar(graphX, graphY, align='center')
+    plt.ylim(400)
+
+    xloc = plt.MaxNLocator(12)
+    ax2.xaxis.set_major_locator(xloc)
+
+    plt.show()
 
 
-create_examples()
 what_is_this_number('images/test.png')
